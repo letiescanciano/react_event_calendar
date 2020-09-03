@@ -5,13 +5,19 @@ const app = express();
 
 require("./config/mongoose.config");
 app.use(bodyParser.json());
+app.use(express.static("public"));
 
-const eventRoutes = require("./routes/events.routes");
+const eventRoutes = require("./routes/events/index");
 // console.log("EventRoutes", eventRoutes);
 app.use("/events", eventRoutes);
 
-app.use(express.static("public"));
+app.get("/test", async (req, res) => {
+  res.json({ message: "pass!" });
+});
 
 app.listen(process.env.PORT, () => {
+  console.log("process.env", process.env.ENV);
   console.log(`Listening on http://localhost:${process.env.PORT}`);
 });
+
+module.exports = app;

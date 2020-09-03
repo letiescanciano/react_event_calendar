@@ -4,8 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "DB=mongodb+srv://admin:Ov0BWowwRM7V0GGY@cluster0.a82wm.mongodb.net/calendar_test PORT=4001 jest --watchAll --testTimeout=10000"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   },
   "author": "letiescanciano",
   "license": "ISC",
@@ -17,5 +23,10 @@
     "express-validator": "^6.6.1",
     "mongoose": "^5.10.2",
     "nodemon": "^2.0.4"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "jest": "^26.4.2",
+    "supertest": "^4.0.2"
   }
 }
