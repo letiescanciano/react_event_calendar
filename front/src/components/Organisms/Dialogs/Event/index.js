@@ -6,12 +6,12 @@ import { EventForm } from "../../../Molecules/Forms/Event";
 
 const EventDialog = (props) => {
   console.log("EventDialog props", props);
-  const { variant, initialValues, handlers, open, ...rest } = props;
+  const { mode, initialValues, handlers, open, ...rest } = props;
   return (
     <Dialog fullWidth maxWidth="lg" open={open} onClose={handlers.onClose}>
       <DialogTitle>Add new event</DialogTitle>
       <EventForm
-        variant={variant}
+        mode={mode}
         handlers={handlers}
         initialValues={initialValues}
       />

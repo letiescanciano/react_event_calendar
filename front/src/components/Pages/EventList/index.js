@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import moment from "moment";
 import { Button, Typography, Grid, makeStyles } from "@material-ui/core";
 
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
@@ -7,7 +7,7 @@ import ViewListIcon from "@material-ui/icons/ViewList";
 import { EventDialog } from "../../Organisms/Dialogs/Event";
 import { CalendarView } from "../../Organisms/Views/Calendar";
 import { ListView } from "../../Organisms/Views/List";
-
+import { EventDrawer } from "../../Organisms/Drawers/Event";
 const useStyles = makeStyles(() => ({
   flex: {
     display: "flex",
@@ -22,6 +22,44 @@ const useStyles = makeStyles(() => ({
     padding: "10px 0px",
   },
 }));
+
+const demoEvents = [
+  {
+    _id: 1,
+    title: "Event 1",
+    description: "afafasfsa",
+    start: "2020-09-04T02:00:00.000Z",
+    end: "2020-09-04T04:30:00.000Z",
+  },
+  {
+    _id: 2,
+    title: "Event 2",
+    description: "afafasfsa",
+    start: "2020-09-05T02:00:00.000Z",
+    end: "2020-09-05T08:30:00.000Z",
+  },
+  {
+    _id: 3,
+    title: "Event 3",
+    description: "afafasfsa",
+    start: "2020-09-02T02:00:00.000Z",
+    end: "2020-09-02T04:30:00.000Z",
+  },
+  {
+    _id: 5,
+    title: "Event 5",
+    description: "afafasfsa",
+    start: "2020-09-04T02:00:00.000Z",
+    end: "2020-09-04T04:30:00.000Z",
+  },
+  {
+    _id: 4,
+    title: "Event 4",
+    description: "afafasfsa",
+    start: "2020-09-08T02:00:00.000Z",
+    end: "2020-09-08T04:30:00.000Z",
+  },
+];
 const EventList = () => {
   const classes = useStyles();
 
@@ -33,15 +71,39 @@ const EventList = () => {
     end: null,
   });
 
-  const [variant, setVariant] = useState("add");
+  const [mode, setMode] = useState("add");
   const [openDialogAddEvent, setOpenDialogAddEvent] = useState(false);
 
   const [showCalendar, setShowCalendar] = useState(true);
   const [showDataTable, setShowDataTable] = useState(false);
 
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [eventSelected, setEventSelected] = useState(null);
+
   useEffect(() => {
-    //get events
+    //TODO get events from API
+    setEvents(
+      demoEvents.map((event) => ({
+        ...event,
+        start: moment(event.start).toDate(),
+        end: moment(event.end).toDate(),
+      }))
+    );
   }, []);
+
+  useEffect(() => {
+    if (eventSelected) {
+      let _events = [...events];
+      _events.some((_event, index) => {
+        if (_event._id === eventSelected._id) {
+          _events[index] = { ...eventSelected };
+          return true;
+        }
+        return false;
+      });
+      setEvents(_events);
+    }
+  }, [eventSelected]);
 
   const handleShowCalendar = () => {
     if (!showCalendar) {
@@ -66,24 +128,50 @@ const EventList = () => {
 
   const handleSelectEvent = (event) => {
     console.log("handleSelectEvent ", event);
-    // setInitialValues({ ...initialValues, start, end });
+    toggleDrawer();
+    setEventSelected(event);
     // handleDialogAddEvent();
   };
   // const handleDialogAddEvent = () =>
   const createEvent = (values) => {
-    console.log("Event data", values);
-    //post to api
-    setEvents((events) => [...events, values]);
+    console.log("createEvent data", JSON.stringify(values));
+    //TODO post to api
+    setEvents((events) => [
+      ...events,
+      {
+        ...values,
+        start: moment(values.start).toDate(),
+        end: moment(values.end).toDate(),
+      },
+    ]);
   };
+  const updateEvent = (values) => {
+    console.log("updateEvent data PUT", JSON.stringify(values));
+    //TODO put to api
+    setEventSelected(values);
+  };
+
+  const toggleDrawer = () => setOpenDrawer(!openDrawer);
+
   return (
     <>
       <EventDialog
         open={openDialogAddEvent}
         initialValues={initialValues}
-        variant={variant}
+        mode={mode}
         handlers={{
           onClose: handleDialogAddEvent,
           createEvent,
+        }}
+      />
+      <EventDrawer
+        open={openDrawer}
+        mode={mode}
+        toggleDrawer={toggleDrawer}
+        info={eventSelected}
+        handlers={{
+          onClose: toggleDrawer,
+          updateEvent,
         }}
       />
       <Grid item md={12} className={classes.flex}>

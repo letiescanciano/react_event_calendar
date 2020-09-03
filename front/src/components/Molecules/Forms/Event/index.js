@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
 
 const EventForm = (props) => {
   console.log("EventForm props", props);
-  const { variant, initialValues, handlers } = props;
+  const { mode, initialValues, handlers } = props;
   const classes = useStyles();
   const eventSchema = Yup.object().shape({
     title: Yup.string().required("Required field"),
@@ -51,13 +51,39 @@ const EventForm = (props) => {
       .required("Required field"),
   });
 
+  const datesFields = (
+    <>
+      <Field
+        name="start"
+        key="start"
+        data-cy="start"
+        label={"Start date"}
+        component={DatePicker}
+        className={
+          mode === "add"
+            ? [classes.w80, classes.mr30].join(" ")
+            : classes.fullWidth
+        }
+        // value={values.start}
+      />
+      <Field
+        name="end"
+        key="end"
+        data-cy="end"
+        label={"End date"}
+        component={DatePicker}
+        className={mode === "add" ? classes.w80 : classes.fullWidth}
+        // value={values.end}
+      />
+    </>
+  );
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={eventSchema}
       onSubmit={(values, { resetForm }) => {
         // console.log("Values onSubmit", values);
-        if (variant === "add") {
+        if (mode === "add") {
           handlers.createEvent(values);
           resetForm = {
             title: "",
@@ -66,8 +92,8 @@ const EventForm = (props) => {
             end: null,
           };
           handlers.onClose();
-        } else if (variant === "edit") {
-          handlers.editOpportunity(values);
+        } else if (mode === "edit") {
+          handlers.updateEvent(values);
           handlers.onClose();
         }
       }}
@@ -98,26 +124,13 @@ const EventForm = (props) => {
                   margin="normal"
                   variant="outlined"
                 />
-                <Grid item md={12} className={classes.flex}>
-                  <Field
-                    name="start"
-                    key="start"
-                    data-cy="start"
-                    label={"Start date"}
-                    component={DatePicker}
-                    className={[classes.w80, classes.mr30].join(" ")}
-                    // value={values.start}
-                  />
-                  <Field
-                    name="end"
-                    key="end"
-                    data-cy="end"
-                    label={"End date"}
-                    component={DatePicker}
-                    className={classes.w80}
-                    // value={values.end}
-                  />
-                </Grid>
+                {mode === "add" ? (
+                  <Grid item md={12} className={classes.flex}>
+                    {datesFields}
+                  </Grid>
+                ) : (
+                  datesFields
+                )}
               </Grid>
 
               <Grid
@@ -144,7 +157,7 @@ const EventForm = (props) => {
                   disabled={!isValid || isSubmitting}
                   type="submit"
                 >
-                  {variant === "add" ? "Add" : "Save"}
+                  {mode === "add" ? "Add" : "Save"}
                 </Button>
               </Grid>
 
@@ -161,5 +174,5 @@ export { EventForm };
 EventForm.propTypes = {
   data: PropTypes.object,
   handlers: PropTypes.object,
-  variant: PropTypes.oneOf(["add", "edit"]),
+  mode: PropTypes.oneOf(["add", "edit"]),
 };
