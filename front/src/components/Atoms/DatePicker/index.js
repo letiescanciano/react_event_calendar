@@ -23,12 +23,6 @@ const DatePicker = ({
   time,
   ...other
 }) => {
-  // const [ selectedDate, setDate ] = useState(new Date());
-
-  // const handleChange = (date) => {
-  // 	console.log(date);
-  // 	setDate(date);
-  // };
   return (
     <MuiPickersUtilsProvider utils={MomentUtils} locale="es">
       <KeyboardDateTimePicker
@@ -52,17 +46,17 @@ const DatePicker = ({
     </MuiPickersUtilsProvider>
   );
 };
-// DatePicker.propTypes = {
-//   /** Values coming from Formik*/
-//   disableToolbar: PropTypes.bool,
-//   variant: PropTypes.oneOf(["standard", "outlined", "filled"]),
-//   format: PropTypes.string,
-//   margin: PropTypes.oneOf(["normal"]),
-//   id: PropTypes.string,
-//   label: PropTypes.string,
-//   name: PropTypes.string,
-//   value: PropTypes.instanceOf(Date),
-// };
+DatePicker.propTypes = {
+  /** Values coming from Formik*/
+  disableToolbar: PropTypes.bool,
+  variant: PropTypes.oneOf(["standard", "outlined", "filled"]),
+  format: PropTypes.string,
+  margin: PropTypes.oneOf(["normal"]),
+  id: PropTypes.string,
+  label: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.instanceOf(Date),
+};
 
 DatePicker.defaultProps = {
   format: "DD/MM/YYYY",

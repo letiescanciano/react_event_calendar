@@ -36,7 +36,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const EventForm = ({ variant, data, handlers }) => {
+const EventForm = (props) => {
+  console.log("EventForm props", props);
+  const { variant, initialValues, handlers } = props;
   const classes = useStyles();
   const eventSchema = Yup.object().shape({
     title: Yup.string().required("Required field"),
@@ -49,126 +51,109 @@ const EventForm = ({ variant, data, handlers }) => {
       .required("Required field"),
   });
 
-  const initialValues =
-    variant === "add"
-      ? {
-          title: "",
-          description: "",
-          start: null,
-          end: null,
-        }
-      : data;
   return (
-    <Grid container className={classes.root}>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={eventSchema}
-        onSubmit={(values, { resetForm }) => {
-          console.log("Values onSubmit", values);
-          if (variant === "add") {
-            handlers.createEvent(values);
-            resetForm = {
-              title: "",
-              description: "",
-              start: null,
-              end: null,
-            };
-            handlers.onClose();
-          } else if (variant === "edit") {
-            handlers.editOpportunity(values);
-            handlers.onClose();
-          }
-        }}
-        render={({
-          values,
-          setFieldValue,
-          handleBlur,
-          isValid,
-          isSubmitting,
-        }) => {
-          console.log("Values in render", values);
-          return (
-            <Form data-cy="add-event" className={classes.form}>
-              <Grid container className={classes.root}>
-                <Grid item md={12}>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={eventSchema}
+      onSubmit={(values, { resetForm }) => {
+        // console.log("Values onSubmit", values);
+        if (variant === "add") {
+          handlers.createEvent(values);
+          resetForm = {
+            title: "",
+            description: "",
+            start: null,
+            end: null,
+          };
+          handlers.onClose();
+        } else if (variant === "edit") {
+          handlers.editOpportunity(values);
+          handlers.onClose();
+        }
+      }}
+    >
+      {({ values, isValid, isSubmitting }) => {
+        // console.log("Values in render", values);
+        return (
+          <Form data-cy="add-event" className={classes.form}>
+            <Grid container className={classes.root}>
+              <Grid item md={12}>
+                <Field
+                  data-cy="title"
+                  name="title"
+                  key="title"
+                  label="Title"
+                  component={TextField}
+                  className={classes.fullWidth}
+                  margin="normal"
+                  variant="outlined"
+                />
+                <Field
+                  data-cy="description"
+                  name="description"
+                  key="description"
+                  label="Description"
+                  component={TextField}
+                  className={classes.fullWidth}
+                  margin="normal"
+                  variant="outlined"
+                />
+                <Grid item md={12} className={classes.flex}>
                   <Field
-                    data-cy="title"
-                    name="title"
-                    key="title"
-                    label="Title"
-                    component={TextField}
-                    className={classes.fullWidth}
-                    margin="normal"
-                    variant="outlined"
-                  />
-                  <Field
-                    data-cy="description"
-                    name="description"
-                    key="description"
-                    label="Description"
-                    component={TextField}
-                    className={classes.fullWidth}
-                    margin="normal"
-                    variant="outlined"
-                  />
-                  <Grid item md={12} className={classes.flex}>
-                    <Field
-                      name="start"
-                      key="start"
-                      data-cy="start"
-                      label={"Start date"}
-                      component={DatePicker}
-                      className={[classes.w80, classes.mr30].join(" ")}
-                      // value={values.start}
-                    />
-                    <Field
-                      name="end"
-                      key="end"
-                      data-cy="end"
-                      label={"End date"}
-                      component={DatePicker}
-                      className={classes.w80}
-
-                      // value={values.end}
-                    />
-                  </Grid>
-                </Grid>
-
-                <Grid
-                  item
-                  md={12}
-                  className={[classes.flex, classes.mt10].join(" ")}
-                >
-                  <Button
-                    data-cy="cancel"
-                    size="medium"
+                    name="start"
+                    key="start"
+                    data-cy="start"
+                    label={"Start date"}
+                    component={DatePicker}
                     className={[classes.w80, classes.mr30].join(" ")}
-                    color="secondary"
-                    variant="outlined"
-                    // onClick={handlers.onClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    data-cy="submit"
-                    size="medium"
-                    color="primary"
-                    variant="outlined"
+                    // value={values.start}
+                  />
+                  <Field
+                    name="end"
+                    key="end"
+                    data-cy="end"
+                    label={"End date"}
+                    component={DatePicker}
                     className={classes.w80}
-                    disabled={!isValid || isSubmitting}
-                    type="submit"
-                  >
-                    {variant === "add" ? "Add" : "Save"}
-                  </Button>
+                    // value={values.end}
+                  />
                 </Grid>
-
-                <Debug />
               </Grid>
-            </Form>
-          );
-        }}
-      />
-    </Grid>
+
+              <Grid
+                item
+                md={12}
+                className={[classes.flex, classes.mt10].join(" ")}
+              >
+                <Button
+                  data-cy="cancel"
+                  size="medium"
+                  className={[classes.w80, classes.mr30].join(" ")}
+                  color="secondary"
+                  variant="outlined"
+                  onClick={handlers.onClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  data-cy="submit"
+                  size="medium"
+                  color="primary"
+                  variant="outlined"
+                  className={classes.w80}
+                  disabled={!isValid || isSubmitting}
+                  type="submit"
+                >
+                  {variant === "add" ? "Add" : "Save"}
+                </Button>
+              </Grid>
+
+              <Debug />
+            </Grid>
+          </Form>
+        );
+      }}
+    </Formik>
   );
 };
 export { EventForm };
