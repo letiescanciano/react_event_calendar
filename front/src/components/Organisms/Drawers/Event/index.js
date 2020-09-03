@@ -4,12 +4,16 @@ import moment from "moment";
 import Drawer from "@material-ui/core/Drawer";
 import Grid from "@material-ui/core/Grid";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+
 import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+
 import Typography from "@material-ui/core/Typography";
 import AlarmAddIcon from "@material-ui/icons/AlarmAdd";
 import AlarmOffIcon from "@material-ui/icons/AlarmOff";
 
 import { EventForm } from "../../../Molecules/Forms/Event";
+import { DeleteConfirmation } from "../../../Molecules/DeleteConfirmation";
 
 const useStyles = makeStyles(() => ({
   drawerContainer: { padding: "24px", width: "380px" },
@@ -46,6 +50,13 @@ const EventDrawer = (props) => {
                   setMode("edit");
                 }}
               />
+              <DeleteIcon
+                color="secondary"
+                className={classes.icon}
+                onClick={() => {
+                  setMode("delete");
+                }}
+              />
             </Grid>
             <Grid item xs={12} className={classes.flex}>
               <Typography variant="body2">
@@ -77,6 +88,11 @@ const EventDrawer = (props) => {
               updateEvent: handleUpdateEvent,
             }}
             initialValues={info}
+          />
+        ) : mode === "delete" ? (
+          <DeleteConfirmation
+            title="Delete event"
+            text="Are you sure you want to delete the event? This action is final and you won't be able to recover any information."
           />
         ) : null}
       </Grid>
