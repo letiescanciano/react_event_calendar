@@ -1,14 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 import { Field, Formik, Form } from "formik";
 import { TextField } from "formik-material-ui";
 import * as Yup from "yup";
-import { Grid, makeStyles, Button } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import Button from "@material-ui/core/Button";
 import { DatePicker } from "../../../Atoms/DatePicker";
-import { Debug } from "../Debug";
+// import { Debug } from "../Debug";
 
-// import PropTypes from "prop-types";
 const useStyles = makeStyles(() => ({
   root: {
     display: "flex",
@@ -43,15 +45,16 @@ const EventForm = (props) => {
   const eventSchema = Yup.object().shape({
     title: Yup.string().required("Required field"),
     description: Yup.string().required("Required field"),
-    start: Yup.date()
-      .default(() => new Date())
-      .required("Required field"),
-    end: Yup.date()
-      .default(() => new Date())
-      .required("Required field"),
+    start: Yup.string().required("Start date can't be empty field"),
+    end: Yup.string()
+      .required("end time cannot be empty")
+      .test("is-greater", "end time should be greater", (value) => {
+        const { start } = this.parent;
+        return moment(value).isSameOrAfter(moment(start));
+      }),
   });
 
-  const datesFields = (
+  const datesFields = (values, errors) => (
     <>
       <Field
         name="start"
@@ -64,16 +67,16 @@ const EventForm = (props) => {
             ? [classes.w80, classes.mr30].join(" ")
             : classes.fullWidth
         }
-        // value={values.start}
       />
+
       <Field
         name="end"
         key="end"
         data-cy="end"
+        minDate={values && values.start ? values.start : moment().toDate()}
         label={"End date"}
         component={DatePicker}
         className={mode === "add" ? classes.w80 : classes.fullWidth}
-        // value={values.end}
       />
     </>
   );
@@ -82,7 +85,6 @@ const EventForm = (props) => {
       initialValues={initialValues}
       validationSchema={eventSchema}
       onSubmit={(values, { resetForm }) => {
-        // console.log("Values onSubmit", values);
         if (mode === "add") {
           handlers.createEvent(values);
           resetForm = {
@@ -98,7 +100,7 @@ const EventForm = (props) => {
         }
       }}
     >
-      {({ values, isValid, isSubmitting }) => {
+      {({ values, isValid, isSubmitting, errors }) => {
         // console.log("Values in render", values);
         return (
           <Form data-cy="add-event" className={classes.form}>
@@ -126,10 +128,10 @@ const EventForm = (props) => {
                 />
                 {mode === "add" ? (
                   <Grid item md={12} className={classes.flex}>
-                    {datesFields}
+                    {datesFields(values)}
                   </Grid>
                 ) : (
-                  datesFields
+                  datesFields(values)
                 )}
               </Grid>
 
@@ -161,7 +163,7 @@ const EventForm = (props) => {
                 </Button>
               </Grid>
 
-              <Debug />
+              {/* <Debug /> */}
             </Grid>
           </Form>
         );

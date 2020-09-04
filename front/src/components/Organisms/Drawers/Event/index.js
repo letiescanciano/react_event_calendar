@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import moment from "moment";
 
 import Drawer from "@material-ui/core/Drawer";
@@ -25,14 +26,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 const EventDrawer = (props) => {
+  // console.log("EventDrawer props", props);
   const classes = useStyles();
-  console.log("EventDrawer props", props);
-  const { variant, info, handlers, open, ...rest } = props;
+  const { info, handlers, open } = props;
 
   const [mode, setMode] = useState("view");
 
   const handleUpdateEvent = (event) => {
-    console.log("handleUpdateEvent event", event);
+    // console.log("handleUpdateEvent event", event);
     handlers.updateEvent(event);
     setMode("view");
   };
@@ -103,3 +104,9 @@ const EventDrawer = (props) => {
 };
 
 export { EventDrawer };
+
+EventDrawer.propTypes = {
+  info: PropTypes.object,
+  handlers: PropTypes.object,
+  open: PropTypes.bool,
+};

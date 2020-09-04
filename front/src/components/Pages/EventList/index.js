@@ -26,43 +26,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const demoEvents = [
-  {
-    _id: 1,
-    title: "Event 1",
-    description: "afafasfsa",
-    start: "2020-09-04T02:00:00.000Z",
-    end: "2020-09-04T04:30:00.000Z",
-  },
-  {
-    _id: 2,
-    title: "Event 2",
-    description: "afafasfsa",
-    start: "2020-09-05T02:00:00.000Z",
-    end: "2020-09-05T08:30:00.000Z",
-  },
-  {
-    _id: 3,
-    title: "Event 3",
-    description: "afafasfsa",
-    start: "2020-09-02T02:00:00.000Z",
-    end: "2020-09-02T04:30:00.000Z",
-  },
-  {
-    _id: 5,
-    title: "Event 5",
-    description: "afafasfsa",
-    start: "2020-09-04T02:00:00.000Z",
-    end: "2020-09-04T04:30:00.000Z",
-  },
-  {
-    _id: 4,
-    title: "Event 4",
-    description: "afafasfsa",
-    start: "2020-09-08T02:00:00.000Z",
-    end: "2020-09-08T04:30:00.000Z",
-  },
-];
 const EventList = () => {
   const classes = useStyles();
   const eventService = new EventServices();
@@ -87,10 +50,10 @@ const EventList = () => {
   useEffect(() => {
     let isMounted = true;
     let source = axios.CancelToken.source();
+
     const getEvents = async () => {
       try {
-        const { data, status } = await eventService.getEvents(); //("http://localhost:4000/events");
-        console.log("events", events);
+        const { data, status } = await eventService.getEvents();
         if (status === 200 && isMounted) {
           setEvents(
             data.map((event) => ({
@@ -111,20 +74,6 @@ const EventList = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (eventSelected) {
-  //     let _events = [...events];
-  //     _events.some((_event, index) => {
-  //       if (_event._id === eventSelected._id) {
-  //         _events[index] = { ...eventSelected };
-  //         return true;
-  //       }
-  //       return false;
-  //     });
-  //     setEvents(_events);
-  //   }
-  // }, [eventSelected]);
-
   const handleShowCalendar = () => {
     if (!showCalendar) {
       setShowCalendar(true);
@@ -141,25 +90,20 @@ const EventList = () => {
   const handleDialogAddEvent = () => setOpenDialogAddEvent(!openDialogAddEvent);
 
   const handleSelectSlot = ({ start, end }) => {
-    console.log("handleSelectSlot ", start, end);
     setInitialValues({ ...initialValues, start, end });
     handleDialogAddEvent();
   };
 
   const handleSelectEvent = (event) => {
-    console.log("handleSelectEvent ", event);
     toggleDrawer();
     setEventSelected(event);
   };
 
   const createEvent = async (values) => {
-    console.log("createEvent data", JSON.stringify(values));
-
-    //TODO post to api
+    // console.log("createEvent data", JSON.stringify(values));
 
     try {
       const { data, status } = await eventService.createEvent(values);
-      console.log("event", data);
       if (status === 201) {
         setEvents((events) => [
           ...events,
@@ -175,11 +119,10 @@ const EventList = () => {
     }
   };
   const updateEvent = async (values) => {
-    console.log("updateEvent data PUT", JSON.stringify(values));
+    // console.log("updateEvent data PUT", JSON.stringify(values));
 
     try {
       const { data, status } = await eventService.updateEvent(values);
-      console.log("events", data);
       if (status === 201) {
         let _events = [...events];
         _events.some((_event, index) => {
@@ -201,12 +144,12 @@ const EventList = () => {
     }
   };
   const deleteEvent = async () => {
-    console.log("Event selected", eventSelected);
+    // console.log("Event selected", eventSelected);
     try {
       const { data, status } = await eventService.deleteEvent(
         eventSelected._id
       );
-      console.log("event deleted data", data);
+      // console.log("event deleted data", data);
       if (status === 200) {
         let _events = [...events].filter((_event) => _event._id !== data._id);
         setEvents(_events);
