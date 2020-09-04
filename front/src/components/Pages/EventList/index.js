@@ -95,8 +95,20 @@ const EventList = () => {
   };
 
   const handleSelectEvent = (event) => {
+    console.log("event", event);
+
+    if (event._id) {
+      setEventSelected(event);
+    } else {
+      setEventSelected({
+        _id: event[0],
+        title: event[1],
+        description: event[2],
+        start: event[3],
+        end: event[4],
+      });
+    }
     toggleDrawer();
-    setEventSelected(event);
   };
 
   const createEvent = async (values) => {
@@ -233,7 +245,10 @@ const EventList = () => {
             }}
           />
         ) : showDataTable ? (
-          <ListView />
+          <ListView
+            data={events}
+            handlers={{ selectEvent: handleSelectEvent }}
+          />
         ) : null}
       </Grid>
     </>
