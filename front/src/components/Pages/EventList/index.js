@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
+import axios from "axios";
 import { Button, Typography, Grid, makeStyles } from "@material-ui/core";
 
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
@@ -8,6 +9,8 @@ import { EventDialog } from "../../Organisms/Dialogs/Event";
 import { CalendarView } from "../../Organisms/Views/Calendar";
 import { ListView } from "../../Organisms/Views/List";
 import { EventDrawer } from "../../Organisms/Drawers/Event";
+
+import EventServices from "../../../services/events";
 const useStyles = makeStyles(() => ({
   flex: {
     display: "flex",
@@ -62,6 +65,7 @@ const demoEvents = [
 ];
 const EventList = () => {
   const classes = useStyles();
+  const eventService = new EventServices();
 
   const [events, setEvents] = useState([]);
   const [initialValues, setInitialValues] = useState({
@@ -81,32 +85,45 @@ const EventList = () => {
   const [eventSelected, setEventSelected] = useState(null);
 
   useEffect(() => {
-    //TODO get events from API
-    setEvents(
-      demoEvents.map((event) => ({
-        ...event,
-        start: moment(event.start).toDate(),
-        end: moment(event.end).toDate(),
-      }))
-    );
+    let isMounted = true;
+    let source = axios.CancelToken.source();
+    const getEvents = async () => {
+      try {
+        const { data, status } = await eventService.getEvents(); //("http://localhost:4000/events");
+        console.log("events", events);
+        if (status === 200 && isMounted) {
+          setEvents(
+            data.map((event) => ({
+              ...event,
+              start: moment(event.start).toDate(),
+              end: moment(event.end).toDate(),
+            }))
+          );
+        }
+      } catch (e) {
+        console.log("error", e);
+      }
+    };
+    getEvents();
     return () => {
-      console.log("EventList unmounted");
+      isMounted = false;
+      source.cancel("Cancelling request in cleanup");
     };
   }, []);
 
-  useEffect(() => {
-    if (eventSelected) {
-      let _events = [...events];
-      _events.some((_event, index) => {
-        if (_event._id === eventSelected._id) {
-          _events[index] = { ...eventSelected };
-          return true;
-        }
-        return false;
-      });
-      setEvents(_events);
-    }
-  }, [eventSelected]);
+  // useEffect(() => {
+  //   if (eventSelected) {
+  //     let _events = [...events];
+  //     _events.some((_event, index) => {
+  //       if (_event._id === eventSelected._id) {
+  //         _events[index] = { ...eventSelected };
+  //         return true;
+  //       }
+  //       return false;
+  //     });
+  //     setEvents(_events);
+  //   }
+  // }, [eventSelected]);
 
   const handleShowCalendar = () => {
     if (!showCalendar) {
@@ -133,34 +150,72 @@ const EventList = () => {
     console.log("handleSelectEvent ", event);
     toggleDrawer();
     setEventSelected(event);
-    // handleDialogAddEvent();
   };
-  // const handleDialogAddEvent = () =>
-  const createEvent = (values) => {
+
+  const createEvent = async (values) => {
     console.log("createEvent data", JSON.stringify(values));
+
     //TODO post to api
-    setEvents((events) => [
-      ...events,
-      {
-        ...values,
-        start: moment(values.start).toDate(),
-        end: moment(values.end).toDate(),
-      },
-    ]);
+
+    try {
+      const { data, status } = await eventService.createEvent(values);
+      console.log("event", data);
+      if (status === 201) {
+        setEvents((events) => [
+          ...events,
+          {
+            ...data,
+            start: moment(data.start).toDate(),
+            end: moment(data.end).toDate(),
+          },
+        ]);
+      }
+    } catch (e) {
+      console.log("error", e);
+    }
   };
-  const updateEvent = (values) => {
+  const updateEvent = async (values) => {
     console.log("updateEvent data PUT", JSON.stringify(values));
-    //TODO put to api
-    setEventSelected(values);
+
+    try {
+      const { data, status } = await eventService.updateEvent(values);
+      console.log("events", data);
+      if (status === 201) {
+        let _events = [...events];
+        _events.some((_event, index) => {
+          if (_event._id === data._id) {
+            _events[index] = {
+              ...data,
+              start: moment(data.start).toDate(),
+              end: moment(data.end).toDate(),
+            };
+            return true;
+          }
+          return false;
+        });
+        setEvents(_events);
+        setEventSelected(data);
+      }
+    } catch (e) {
+      console.log("error", e);
+    }
   };
-  const deleteEvent = () => {
+  const deleteEvent = async () => {
     console.log("Event selected", eventSelected);
-    let _events = [...events].filter(
-      (_event) => _event._id !== eventSelected._id
-    );
-    setEvents(_events);
-    setEventSelected(null);
-    toggleDrawer();
+    try {
+      const { data, status } = await eventService.deleteEvent(
+        eventSelected._id
+      );
+      console.log("event deleted data", data);
+      if (status === 200) {
+        let _events = [...events].filter((_event) => _event._id !== data._id);
+        setEvents(_events);
+        setEventSelected(null);
+        toggleDrawer();
+      }
+    } catch (e) {
+      console.log("error", e);
+    }
   };
 
   const toggleDrawer = () => setOpenDrawer(!openDrawer);
