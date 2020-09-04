@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon app.js",
-    "test": "DB=mongodb+srv://admin:Ov0BWowwRM7V0GGY@cluster0.a82wm.mongodb.net/calendar_test PORT=4001 jest --watchAll --testTimeout=10000"
+    "test": "DB=mongodb+srv://admin:Ov0BWowwRM7V0GGY@cluster0.a82wm.mongodb.net/calendar_test PORT=4001 jest --testTimeout=10000"
   },
   "jest": {
     "testEnvironment": "node",
@@ -18,6 +18,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.6.1",

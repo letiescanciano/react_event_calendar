@@ -14,6 +14,7 @@ const validationArray = [
 ];
 
 router.get("/", (req, res) => {
+  console.log("Get events fired");
   Event.find()
     .then((result) => {
       return res.status(200).json(result);
