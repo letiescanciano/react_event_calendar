@@ -93,6 +93,8 @@ const EventDrawer = (props) => {
           <DeleteConfirmation
             title="Delete event"
             text="Are you sure you want to delete the event? This action is final and you won't be able to recover any information."
+            onCancel={handlers.onClose}
+            onSubmit={handlers.deleteEvent}
           />
         ) : null}
       </Grid>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import BigCalendar from "react-big-calendar";
 import { Calendar, Views, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -9,7 +9,7 @@ const CalendarView = (props) => {
   console.log("CalendarView props", props);
 
   const { data, handlers, ...rest } = props;
-  const [date, setDate] = useState(moment());
+  const [date, setDate] = useState(moment().toDate());
   const localizer = momentLocalizer(moment);
 
   return (

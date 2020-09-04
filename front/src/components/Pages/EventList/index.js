@@ -89,6 +89,9 @@ const EventList = () => {
         end: moment(event.end).toDate(),
       }))
     );
+    return () => {
+      console.log("EventList unmounted");
+    };
   }, []);
 
   useEffect(() => {
@@ -150,30 +153,44 @@ const EventList = () => {
     //TODO put to api
     setEventSelected(values);
   };
+  const deleteEvent = () => {
+    console.log("Event selected", eventSelected);
+    let _events = [...events].filter(
+      (_event) => _event._id !== eventSelected._id
+    );
+    setEvents(_events);
+    setEventSelected(null);
+    toggleDrawer();
+  };
 
   const toggleDrawer = () => setOpenDrawer(!openDrawer);
 
   return (
     <>
-      <EventDialog
-        open={openDialogAddEvent}
-        initialValues={initialValues}
-        mode={mode}
-        handlers={{
-          onClose: handleDialogAddEvent,
-          createEvent,
-        }}
-      />
-      <EventDrawer
-        open={openDrawer}
-        mode={mode}
-        toggleDrawer={toggleDrawer}
-        info={eventSelected}
-        handlers={{
-          onClose: toggleDrawer,
-          updateEvent,
-        }}
-      />
+      {openDialogAddEvent && (
+        <EventDialog
+          open={openDialogAddEvent}
+          initialValues={initialValues}
+          mode={mode}
+          handlers={{
+            onClose: handleDialogAddEvent,
+            createEvent,
+          }}
+        />
+      )}
+      {openDrawer && (
+        <EventDrawer
+          open={openDrawer}
+          mode={mode}
+          toggleDrawer={toggleDrawer}
+          info={eventSelected}
+          handlers={{
+            onClose: toggleDrawer,
+            updateEvent,
+            deleteEvent,
+          }}
+        />
+      )}
       <Grid item md={12} className={classes.flex}>
         <Typography variant="h1" color="primary">
           Event calendar
