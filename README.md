@@ -1,4 +1,4 @@
-# Full sstack event app
+# Full stack event app
 - Simple event app with calendar and list view
 
 # Front
